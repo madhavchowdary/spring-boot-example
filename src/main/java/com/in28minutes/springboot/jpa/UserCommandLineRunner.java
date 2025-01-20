@@ -1,5 +1,7 @@
 package com.in28minutes.springboot.jpa;
 
+import java.util.function.Consumer;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +16,6 @@ public class UserCommandLineRunner implements CommandLineRunner {
     @Autowired
     private UserRepository repository;
 
-    @Override
     public void run(String... args) {
 
         repository.save(new User("Ranga", "Admin"));
@@ -23,12 +24,20 @@ public class UserCommandLineRunner implements CommandLineRunner {
         repository.save(new User("Raghu", "User"));
 
         repository.findAll()
-                .forEach(user -> LOGGER.info(user.toString()));
+                .forEach(new Consumer<User>() {
+					public void accept(User user) {
+						LOGGER.info(user.toString());
+					}
+				});
 
         LOGGER.info("Admin users are.....");
         LOGGER.info("____________________");
         repository.findByRole("Admin")
-                .forEach(user -> LOGGER.info(user.toString()));
+                .forEach(new Consumer<User>() {
+					public void accept(User user) {
+						LOGGER.info(user.toString());
+					}
+				});
 
     }
 

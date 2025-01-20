@@ -1,7 +1,6 @@
 package com.in28minutes.springboot.security;
 
 import java.util.function.Function;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -21,7 +20,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf()
-                .disable()
+        .disable()
                 .authorizeHttpRequests()
                 .requestMatchers("/students/**")
                 .hasAnyRole("USER")
@@ -51,7 +50,11 @@ public class SecurityConfig {
     }
 
     private UserDetails createNewUser(String username, String password) {
-        Function<String, String> passwordEncoder = input -> passwordEncoder().encode(input);
+        Function<String, String> passwordEncoder = new Function<String, String>() {
+			public String apply(String input) {
+				return passwordEncoder().encode(input);
+			}
+		};
 
         return User.builder()
                 .passwordEncoder(passwordEncoder)

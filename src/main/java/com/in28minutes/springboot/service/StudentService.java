@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
+
 import org.springframework.stereotype.Service;
 
 import com.in28minutes.springboot.model.Course;
@@ -14,7 +16,7 @@ import com.in28minutes.springboot.model.Student;
 @Service
 public class StudentService {
 
-    private static final List<Student> students = new ArrayList<>();
+    private static final List<Student> students = new ArrayList<Student>();
 
     private final SecureRandom random = new SecureRandom();
 
@@ -33,10 +35,10 @@ public class StudentService {
         		Arrays.asList("Pom.xml", "Build Life Cycle", "Parent POM", "Importing into Eclipse"));
 
         Student ranga = new Student("Student1", "Ranga Karanam", "Hiker, Programmer and Architect",
-                new ArrayList<>(Arrays.asList(courseOne, courseTwo, courseThree, courseFour)));
+                new ArrayList<Course>(Arrays.asList(courseOne, courseTwo, courseThree, courseFour)));
 
         Student satish = new Student("Student2", "Satish T", "Hiker, Programmer and Architect",
-                new ArrayList<>(Arrays.asList(courseOne, courseTwo, courseThree, courseFour)));
+                new ArrayList<Course>(Arrays.asList(courseOne, courseTwo, courseThree, courseFour)));
 
         students.add(ranga);
         students.add(satish);
@@ -46,13 +48,17 @@ public class StudentService {
         return students;
     }
 
-    public Student retrieveStudent(String studentId) {
+    public Student retrieveStudent(final String studentId) {
         return students.stream()
-                .filter(student -> student.getId().equals(studentId))
+                .filter(new Predicate<Student>() {
+					public boolean test(Student student) {
+						return student.getId().equals(studentId);
+					}
+				})
                 .findAny()
                 .orElse(null);
 
-    }
+    } 
 
     public List<Course> retrieveCourses(String studentId) {
         Student student = retrieveStudent(studentId);
@@ -64,7 +70,7 @@ public class StudentService {
         return student == null ? null : student.getCourses();
     }
 
-    public Course retrieveCourse(String studentId, String courseId) {
+    public Course retrieveCourse(String studentId, final String courseId) {
         Student student = retrieveStudent(studentId);
 
         if (student == null) {
@@ -72,7 +78,11 @@ public class StudentService {
         }
 
         return student.getCourses().stream()
-                .filter(course -> course.getId().equals(courseId))
+                .filter(new Predicate<Course>() {
+					public boolean test(Course course) {
+						return course.getId().equals(courseId);
+					}
+				})
                 .findAny()
                 .orElse(null);
     }
